@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Leveluxe Modern Music Academy API"
     ENV: str = "development"
     PORT: int = 8000
-    DATABASE_URL: str
+    DATABASE_URL: str = "placeholder"
     CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
 
     @property
