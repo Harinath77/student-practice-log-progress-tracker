@@ -1,0 +1,16 @@
+{
+  "name": "leveluxe-site-root",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "install:all": "npm install",
+    "dev": "npm run dev:frontend",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "build:frontend": "npm run build --workspace=frontend",
+    "dev:backend": "powershell -Command \"cd backend; .\\.venv\\Scripts\\uvicorn app.main:app --reload\"",
+    "start:backend": "powershell -Command \"cd backend; .\\.venv\\Scripts\\uvicorn app.main:app --host 0.0.0.0 --port 8000\""
+  }
+}

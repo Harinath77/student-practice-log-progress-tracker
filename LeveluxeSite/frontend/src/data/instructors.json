@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "full_name": "Arjun Rao",
+    "instrument": "Guitar",
+    "qualification": "Trinity College London Grade 8 (Guitar)",
+    "experience_years": 8,
+    "bio": "Arjun is a seasoned lead guitarist who has toured with several indie-rock bands across India. He specializes in fingerstyle techniques, blues phrasing, and rock improvisation.",
+    "languages": "English, Telugu",
+    "specialization": "Rock, Blues & Acoustic Fingerstyle Soloing",
+    "image_url": "",
+    "created_at": "2026-06-19T10:00:00Z"
+  },
+  {
+    "id": 2,
+    "full_name": "Meera Sharma",
+    "instrument": "Piano",
+    "qualification": "Master of Music (ABRSM Certified)",
+    "experience_years": 10,
+    "bio": "Meera has over a decade of teaching classical piano. She focuses on keyboard technique, sight-reading, ear training, and preparing students for ABRSM examinations.",
+    "languages": "English, Hindi",
+    "specialization": "Classical Composition & Intermediate-Advanced Repertoire",
+    "image_url": "",
+    "created_at": "2026-06-19T10:00:00Z"
+  },
+  {
+    "id": 3,
+    "full_name": "Rahul Verma",
+    "instrument": "Drums",
+    "qualification": "Rockschool London Grade 8 (Drums)",
+    "experience_years": 7,
+    "bio": "Rahul is a percussion specialist active in Hyderabad's session music circuit. He teaches tempo precision, coordinate independence, drum fills, and rock/pop grooves.",
+    "languages": "English, Hindi, Telugu",
+    "specialization": "Rock, Metal & Funk Rhythmic Syncopation",
+    "image_url": "",
+    "created_at": "2026-06-19T10:00:00Z"
+  },
+  {
+    "id": 4,
+    "full_name": "Ananya Iyer",
+    "instrument": "Violin",
+    "qualification": "Diploma in Violin Performance (TCL)",
+    "experience_years": 9,
+    "bio": "Ananya teaches violin with a focus on classical bowing mechanics, perfect intonation, and posture. She has performed with several string orchestras.",
+    "languages": "English, Tamil",
+    "specialization": "Classical Violin Repertoire & Bowing Dynamics",
+    "image_url": "",
+    "created_at": "2026-06-19T10:00:00Z"
+  },
+  {
+    "id": 5,
+    "full_name": "Kiran Kumar",
+    "instrument": "Keyboard",
+    "qualification": "Grade 7 Rockschool Keyboard",
+    "experience_years": 6,
+    "bio": "Kiran is a synthesizer sound design expert and arrangement designer. He teaches keyboard accompaniment, pitch modulation, and synth controls.",
+    "languages": "English, Kannada",
+    "specialization": "Synthesizer Sound Mapping & MIDI Arranging",
+    "image_url": "",
+    "created_at": "2026-06-19T10:00:00Z"
+  },
+  {
+    "id": 6,
+    "full_name": "Sneha Reddy",
+    "instrument": "Vocals",
+    "qualification": "B.A. in Music (Vocal Performance)",
+    "experience_years": 12,
+    "bio": "Sneha has coached over 300 vocalists. She specializes in breathing alignment, range extension, pitch accuracy, style expression, and vocal health.",
+    "languages": "English, Telugu, Hindi",
+    "specialization": "Pop, Soul & Western Classical Vocal Technique",
+    "image_url": "",
+    "created_at": "2026-06-19T10:00:00Z"
+  }
+]

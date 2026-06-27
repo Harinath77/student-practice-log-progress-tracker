@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "title": "Guitar (Acoustic & Electric)",
+    "instrument": "Guitar",
+    "level": "Beginner",
+    "duration": "24 Weeks",
+    "fees": 12000.0,
+    "description": "Master acoustic and electric guitar. Learn essential chord shapes, strumming patterns, fingerstyle techniques, and soloing scales.",
+    "image_url": "/images/guitar.png"
+  },
+  {
+    "id": 2,
+    "title": "Piano (Classical & Modern)",
+    "instrument": "Piano",
+    "level": "Intermediate",
+    "duration": "36 Weeks",
+    "fees": 18000.0,
+    "description": "Develop solid classical foundations and modern styles. Covers sight-reading, dual-hand coordination, scale structures, and expressive solos.",
+    "image_url": "/images/piano.png"
+  },
+  {
+    "id": 3,
+    "title": "Keyboard (Synthesizer)",
+    "instrument": "Keyboard",
+    "level": "Beginner",
+    "duration": "24 Weeks",
+    "fees": 10000.0,
+    "description": "Explore keyboard play, synth sound-design, rhythm mapping, chords, and live stage accompaniment techniques.",
+    "image_url": "/images/keyboard.png"
+  },
+  {
+    "id": 4,
+    "title": "Violin (Classical Repertoire)",
+    "instrument": "Violin",
+    "level": "Advanced",
+    "duration": "48 Weeks",
+    "fees": 24000.0,
+    "description": "Acquire correct body posture, violin bowing control, perfect pitch intonation, and study classic string compositions.",
+    "image_url": "/images/violin.png"
+  },
+  {
+    "id": 5,
+    "title": "Drums & Percussion",
+    "instrument": "Drums",
+    "level": "Beginner",
+    "duration": "24 Weeks",
+    "fees": 15000.0,
+    "description": "Build tempo accuracy, four-way limb coordination, stick grip control, grooves, and play along with pop, rock, and jazz beats.",
+    "image_url": "/images/drums.png"
+  },
+  {
+    "id": 6,
+    "title": "Vocal Music Training",
+    "instrument": "Vocal",
+    "level": "Beginner",
+    "duration": "12 Weeks",
+    "fees": 9000.0,
+    "description": "Improve pitch accuracy, lung/breath control, vocal projection, articulation, style expression, and vocal cords health.",
+    "image_url": "/images/vocals.png"
+  }
+]
