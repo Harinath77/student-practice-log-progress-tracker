@@ -38,24 +38,23 @@ function App() {
         <ScrollToTop />
         <Layout>
           <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/courses" element={<Courses />} />
-            <Route path="/courses/:id" element={<CourseDetails />} />
-            <Route path="/instructors" element={<Instructors />} />
-            <Route path="/instructors/:id" element={<InstructorDetails />} />
-            <Route path="/schedule" element={<Schedule />} />
-            <Route path="/contact" element={<Contact />} />
-            
             {/* Guest Auth routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/signup" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
 
-            {/* Protected Student Portal routes */}
+            {/* Protected routes (requires login) */}
             <Route element={<AuthGuard />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/courses" element={<Courses />} />
+              <Route path="/courses/:id" element={<CourseDetails />} />
+              <Route path="/instructors" element={<Instructors />} />
+              <Route path="/instructors/:id" element={<InstructorDetails />} />
+              <Route path="/schedule" element={<Schedule />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="/dashboard" element={<UserDashboard />} />
               <Route path="/profile" element={<Profile />} />
             </Route>
@@ -63,6 +62,7 @@ function App() {
             {/* Protected Admin Workspace routes */}
             <Route element={<AdminGuard />}>
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
             </Route>
 
             {/* Fallback route */}
