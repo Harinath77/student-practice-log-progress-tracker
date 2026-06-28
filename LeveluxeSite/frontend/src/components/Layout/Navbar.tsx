@@ -66,12 +66,20 @@ const Navbar: React.FC = () => {
                 Dashboard
               </NavLink>
             ) : (
-              <NavLink
-                to="/login"
-                className="bg-white/5 hover:bg-white/10 text-white font-semibold px-4 py-2 rounded-xl border border-white/10 text-xs transition-all active:scale-95"
-              >
-                Sign In
-              </NavLink>
+              <div className="flex items-center space-x-3">
+                <NavLink
+                  to="/login"
+                  className="bg-white/5 hover:bg-white/10 text-white font-semibold px-4 py-2 rounded-xl border border-white/10 text-xs transition-all active:scale-95"
+                >
+                  Sign In
+                </NavLink>
+                <NavLink
+                  to="/register"
+                  className="bg-yellow-500 hover:bg-yellow-400 text-neutral-900 font-bold px-4 py-2 rounded-xl text-xs transition-all active:scale-95"
+                >
+                  Sign Up
+                </NavLink>
+              </div>
             )}
           </div>
  
@@ -117,13 +125,22 @@ const Navbar: React.FC = () => {
                 Dashboard
               </NavLink>
             ) : (
-              <NavLink
-                to="/login"
-                onClick={() => setIsOpen(false)}
-                className="block text-center bg-white/5 hover:bg-white/10 text-white font-semibold py-2 rounded-xl border border-white/10 text-sm transition-all"
-              >
-                Sign In
-              </NavLink>
+              <div className="flex flex-col gap-2">
+                <NavLink
+                  to="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="block text-center bg-white/5 hover:bg-white/10 text-white font-semibold py-2 rounded-xl border border-white/10 text-sm transition-all"
+                >
+                  Sign In
+                </NavLink>
+                <NavLink
+                  to="/register"
+                  onClick={() => setIsOpen(false)}
+                  className="block text-center bg-yellow-500 hover:bg-yellow-400 text-neutral-900 font-bold py-2 rounded-xl text-sm transition-all"
+                >
+                  Sign Up
+                </NavLink>
+              </div>
             )}
           </div>
         </div>
