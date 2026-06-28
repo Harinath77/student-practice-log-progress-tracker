@@ -10,6 +10,7 @@ from app.models.instructor import Instructor
 from app.models.schedule import Schedule
 from app.models.enrollment import Enrollment
 from app.models.user import User
+from app.models.audit_log import AuditLog
 from app.auth.hash import get_password_hash
 
 def init_db():

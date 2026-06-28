@@ -1,45 +1,42 @@
-# Leveluxe Music Academy Secure Authentication & Authorization Walkthrough
+# Leveluxe Music Academy Security, Separated Portals & Audit Logging Walkthrough
 
-I have implemented a complete JWT-based authentication and Role-Based Access Control (RBAC) authorization system for both the FastAPI backend and the React + TypeScript frontend.
+I have improved the authentication system, separated public and admin credentials gates, enforced strong Role-Based Access Control (RBAC) validations on the backend, and created a multi-tab sidebar Admin Dashboard with complete database audit logging.
 
-## Changes Made
+## Core Implementations
 
-### 1. Database & Security Foundation
-* **Cryptographic Hashing**: Added `passlib[bcrypt]` and `bcrypt` to hashing flows at [hash.py](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/backend/app/auth/hash.py) to hash and verify user passwords.
-* **Token Handlers**: Created [jwt.py](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/backend/app/auth/jwt.py) for signing, decoding, and validating JSON Web Tokens (JWT) using secure HS256 algorithms.
-* **Database Tables**: Implemented SQLAlchemy models [user.py](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/backend/app/models/user.py) and [refresh_token.py](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/backend/app/models/refresh_token.py). Registered them inside `init_db.py` to support migrations.
-* **Administrator Seeding**: Updated `init_db.py` to seed a default administrator user (`admin@leveluxe.com` / `Admin@123`) to allow immediate setup.
+### 1. Separate Authentication Portals
+* **Public Student Login** ([Login.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/pages/Login.tsx)): Removed the "Admin Workspace" toggle. It accepts Student credentials only. If an admin attempts to sign in via the public form, they are blocked, keeping the admin workspace hidden.
+* **Separated Admin Gateway** ([AdminLogin.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/pages/AdminLogin.tsx)): Created a dedicated login form under `/admin/login` that is not linked anywhere on public pages. It handles admin logins only and redirects them to `/admin`.
 
-### 2. FastAPI Endpoints & Guards
-* **Auth Dependencies**: Implemented [auth.py](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/backend/app/dependencies/auth.py) dependencies (`get_current_user`, `get_current_admin`) to authorize calls.
-* **Router Registration**: Created [auth.py](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/backend/app/routers/auth.py) (register, login, logout, refresh, change password, forgot/reset password) and [admin.py](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/backend/app/routers/admin.py) (analytics overview, user details edits, and deletion) routers.
-* **Securing Resource APIs**: Protected write/delete methods (`POST`, `PUT`, `DELETE`) on existing routers:
-  * [courses.py](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/backend/app/routers/courses.py)
-  * [instructors.py](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/backend/app/routers/instructors.py)
-  * [schedule.py](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/backend/app/routers/schedule.py)
-  * [enrollments.py](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/backend/app/routers/enrollments.py) (includes student view `/enrollments/me` and status toggles for approvals).
+### 2. Backend Security & RBAC Enforcement
+* **Global Dependency Protection**: Configured the `/api/v1/admin/*` router to enforce backend validation checks:
+  ```python
+  router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(get_current_admin)])
+  ```
+* **Restricted API Actions**: Migrated Course, Instructor, Schedule, and Enrollment write actions into the admin router, returning `401 Unauthorized` or `403 Forbidden` if a student profile requests them.
 
-### 3. Frontend Global State & Automated Retries
-* **Auth Context**: Implemented [AuthContext.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/context/AuthContext.tsx) to distribute session profiles and handle storage parameters.
-* **Axios Interceptors**: Re-wrote [apiClient.ts](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/services/apiClient.ts) to automatically attach JWT authorization headers and listen for 401 token expiry status codes to perform silent token refresh requests.
-* **Page Redirection Guards**: Developed [AuthGuard.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/guards/AuthGuard.tsx) and [AdminGuard.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/guards/AdminGuard.tsx) which restricts access to specific workspaces.
+### 3. Detailed Database Audit Log System
+* **AuditLog Model** ([audit_log.py](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/backend/app/models/audit_log.py)): Created an SQL table that logs timestamp, administrator name, action description, affected resource, old and new serialized values, client IP address, and browser user-agent.
+* **Audit Logger Utility** ([audit.py](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/backend/app/utils/audit.py)): Dynamically records security operations across Course, Instructor, Schedule, Enrollment status updates, password overrides, and user changes.
 
-### 4. Interactive Pages & UI Panel
-* **Login / Admin Workspace** ([Login.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/pages/Login.tsx)): Unified forms with remember me checkbox and credentials verification.
-* **Account Register** ([Register.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/pages/Register.tsx)): Allows signing up for student accounts.
-* **Forgot & Reset Password** ([ForgotPassword.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/pages/ForgotPassword.tsx), [ResetPassword.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/pages/ResetPassword.tsx)): Reset simulation tools.
-* **Student Dashboard** ([UserDashboard.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/pages/UserDashboard.tsx)): Lists approved registrations, weekly classes, and progress bars.
-* **User Profile Page** ([Profile.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/pages/Profile.tsx)): Profile detail editor and password changes.
-* **Admin Dashboard** ([AdminDashboard.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/pages/AdminDashboard.tsx)): Comprehensive panel incorporating stats cards, user grids, course catalogs, instructor grids, schedule planners, and pending enrollment approve/reject buttons.
+### 4. Admin Dashboard Redesign ([AdminDashboard.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/pages/AdminDashboard.tsx))
+Redesigned the workspace to utilize a left-hand navigation sidebar loaded with custom views:
+* **Dashboard**: Widgets displaying totals, pending registrations, and today's active classes.
+* **Courses**: Add, edit, delete, and activate/deactivate courses.
+* **Coaches**: Add, edit, delete, enable/disable profiles, and update experience years or bios.
+* **Schedules**: Multi-class timetables scheduling rooms and capacities.
+* **Enrollments**: Booking list with search/filter options, status toggles, and a **CSV Export** downloader.
+* **User Grid**: Manage user profiles, activate/deactivate access, reset student passwords, change roles, and view user enrollment history.
+* **Audit Logs**: Visual logger displaying chronological administrative actions, IP addresses, and user agents.
 
 ---
 
 ## Verification Results
 
-### Production Compilation check
-* Ran `npm run build` inside `frontend/`.
-* **Result**: Compiled and bundled successfully inside `1.15s` with `0` errors.
+### Frontend Compilation
+* Ran `npm run build` in the `frontend` directory.
+* **Result**: Compiled and bundled successfully inside `1.03s` with `0` warnings/errors.
 
-### Seeding & DB Table verify
-* Ran migrations and seeded the database via `init_db.py`.
-* **Result**: Successfully created the `users` and `refresh_tokens` tables and seeded the default administrator profile.
+### Database Setup
+* Re-ran migrations via `init_db.py`.
+* **Result**: Created the `audit_logs` table, seeded default admin credentials (`admin@leveluxe.com` / `Admin@123`), and mock courses.
