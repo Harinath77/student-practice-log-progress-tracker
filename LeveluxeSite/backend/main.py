@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.routers import health, courses, instructors, schedule
+from app.routers import health, courses, instructors, schedule, enrollments
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -23,6 +23,7 @@ app.include_router(health.router)
 app.include_router(courses.router, prefix="/api/v1")
 app.include_router(instructors.router, prefix="/api/v1")
 app.include_router(schedule.router, prefix="/api/v1")
+app.include_router(enrollments.router, prefix="/api/v1")
 
 @app.get("/")
 def read_root():

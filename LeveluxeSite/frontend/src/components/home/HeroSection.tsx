@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Star, ArrowRight, Music4 } from 'lucide-react';
 
@@ -20,7 +21,11 @@ const EqualizerBar: React.FC<{ delay: number; duration: number; heightRange: num
   );
 };
 
-const HeroSection: React.FC = () => {
+interface HeroSectionProps {
+  onEnrollClick?: () => void;
+}
+
+const HeroSection: React.FC<HeroSectionProps> = ({ onEnrollClick }) => {
   return (
     <section className="relative w-full min-h-screen flex items-center bg-gradient-to-br from-neutral-950 via-neutral-900 to-indigo-950 text-white overflow-hidden pt-28 pb-16">
       {/* Dynamic ambient glowing circles */}
@@ -56,19 +61,19 @@ const HeroSection: React.FC = () => {
 
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-4">
-              <a
-                href="#enroll"
-                className="inline-flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-neutral-900 font-bold px-8 py-4 rounded-xl transition-all duration-200 shadow-lg shadow-yellow-500/20 active:scale-95 group"
+              <button
+                onClick={onEnrollClick}
+                className="inline-flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-neutral-900 font-bold px-8 py-4 rounded-xl transition-all duration-200 shadow-lg shadow-yellow-500/20 active:scale-95 group cursor-pointer"
               >
                 Enroll Now
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </a>
-              <a
-                href="#courses"
-                className="inline-flex items-center justify-center bg-white/5 hover:bg-white/10 text-white font-semibold px-8 py-4 rounded-xl border border-white/10 transition-all duration-200 active:scale-95"
+              </button>
+              <Link
+                to="/courses"
+                className="inline-flex items-center justify-center bg-white/5 hover:bg-white/10 text-white font-semibold px-8 py-4 rounded-xl border border-white/10 transition-all duration-200 active:scale-95 cursor-pointer"
               >
                 Explore Courses
-              </a>
+              </Link>
             </div>
 
             {/* Trust Badges */}

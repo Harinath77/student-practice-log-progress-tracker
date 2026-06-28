@@ -8,6 +8,7 @@ from app.database import engine, Base, SessionLocal
 from app.models.course import Course
 from app.models.instructor import Instructor
 from app.models.schedule import Schedule
+from app.models.enrollment import Enrollment
 
 def init_db():
     print("Initializing database tables...")

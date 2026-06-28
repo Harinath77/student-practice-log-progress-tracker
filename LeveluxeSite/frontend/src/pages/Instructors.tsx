@@ -6,6 +6,7 @@ import InstructorSearch from '../components/instructors/InstructorSearch';
 import { InstructorSkeletonList } from '../components/instructors/InstructorSkeleton';
 import EmptyInstructorState from '../components/instructors/EmptyInstructorState';
 import { AlertCircle, RotateCcw, Award, Music, Sparkles, Users, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Instructors: FC = () => {
   const {
@@ -179,19 +180,19 @@ const Instructors: FC = () => {
             Reserve a trial masterclass with one of our certified music coaches and begin your instrumental lessons today.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-            <a
-              href="/contact"
+            <Link
+              to="/contact"
               className="inline-flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-neutral-900 font-bold px-8 py-4 rounded-xl transition-all duration-200 shadow-lg shadow-yellow-500/20 active:scale-95 group cursor-pointer"
             >
               Enroll Today
               <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </a>
-            <a
-              href="/courses"
+            </Link>
+            <Link
+              to="/courses"
               className="inline-flex items-center justify-center bg-white/5 hover:bg-white/10 text-white font-semibold px-8 py-4 rounded-xl border border-white/10 transition-all duration-200 active:scale-95 cursor-pointer"
             >
               Explore Courses
-            </a>
+            </Link>
           </div>
         </div>
       </section>

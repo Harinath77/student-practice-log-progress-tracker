@@ -4,9 +4,10 @@ import { Calendar, Clock, User, MapPin, Armchair } from 'lucide-react';
 
 interface WeeklyScheduleTableProps {
   schedules: Schedule[];
+  onEnroll?: (schedule: Schedule) => void;
 }
 
-export const WeeklyScheduleTable: React.FC<WeeklyScheduleTableProps> = ({ schedules }) => {
+export const WeeklyScheduleTable: React.FC<WeeklyScheduleTableProps> = ({ schedules, onEnroll }) => {
   return (
     <div className="w-full text-left">
       
@@ -23,6 +24,7 @@ export const WeeklyScheduleTable: React.FC<WeeklyScheduleTableProps> = ({ schedu
               <th className="px-6 py-5 text-xs font-bold text-neutral-400 uppercase tracking-widest text-left">Batch</th>
               <th className="px-6 py-5 text-xs font-bold text-neutral-400 uppercase tracking-widest text-left">Room</th>
               <th className="px-6 py-5 text-xs font-bold text-neutral-400 uppercase tracking-widest text-right">Seats</th>
+              <th className="px-6 py-5 text-xs font-bold text-neutral-400 uppercase tracking-widest text-right"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-850/50">
@@ -78,6 +80,14 @@ export const WeeklyScheduleTable: React.FC<WeeklyScheduleTableProps> = ({ schedu
                     isLowSeats ? 'text-red-400 font-bold' : 'text-neutral-400'
                   }`}>
                     {row.available_seats} Left
+                  </td>
+                  <td className="px-6 py-5.5 text-sm text-right">
+                    <button 
+                      onClick={() => onEnroll && onEnroll(row)}
+                      className="text-xs font-bold text-yellow-400 hover:text-neutral-900 border border-yellow-500/20 hover:border-transparent hover:bg-yellow-500 bg-yellow-500/5 px-3 py-1.5 rounded-xl transition-all cursor-pointer active:scale-95"
+                    >
+                      Enroll
+                    </button>
                   </td>
                 </tr>
               );
@@ -149,7 +159,7 @@ export const WeeklyScheduleTable: React.FC<WeeklyScheduleTableProps> = ({ schedu
               </div>
 
               {/* Seat reservation */}
-              <div className="flex items-center justify-between border-t border-neutral-850/60 pt-3 text-xs">
+              <div className="flex items-center justify-between border-t border-neutral-850/60 pt-3 text-xs pb-1">
                 <div className="flex items-center space-x-1.5">
                   <Armchair className={`h-3.5 w-3.5 ${isLowSeats ? 'text-red-400' : 'text-neutral-500'}`} />
                   <span className={isLowSeats ? 'text-red-400 font-bold' : 'text-neutral-400'}>
@@ -160,6 +170,14 @@ export const WeeklyScheduleTable: React.FC<WeeklyScheduleTableProps> = ({ schedu
                   {row.available_seats} Slots left
                 </span>
               </div>
+
+              {/* Action Button */}
+              <button 
+                onClick={() => onEnroll && onEnroll(row)}
+                className="w-full bg-yellow-500 hover:bg-yellow-400 text-neutral-900 font-bold py-2.5 rounded-xl transition-all cursor-pointer text-xs active:scale-95 text-center block mt-2"
+              >
+                Enroll in Slot
+              </button>
 
             </div>
           );

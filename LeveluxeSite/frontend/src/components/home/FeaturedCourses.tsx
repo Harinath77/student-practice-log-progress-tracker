@@ -91,6 +91,7 @@ const FeaturedCourses: React.FC = () => {
           {courses.map((course, index) => (
             <motion.div key={index} variants={itemVariants}>
               <CourseCard
+                id={index + 1}
                 image={course.image}
                 name={course.name}
                 description={course.description}

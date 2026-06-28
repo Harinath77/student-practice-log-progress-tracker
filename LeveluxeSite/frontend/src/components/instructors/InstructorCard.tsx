@@ -1,3 +1,5 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
 import type { Instructor } from '../../types/instructor';
 import { Award, Languages, Sparkles, Music, ChevronRight } from 'lucide-react';
 
@@ -112,10 +114,13 @@ const InstructorCard: React.FC<InstructorCardProps> = ({ instructor }) => {
         </div>
 
         {/* View Profile Action */}
-        <button className="w-full inline-flex items-center justify-center bg-white/5 hover:bg-yellow-500 hover:text-neutral-900 text-white font-bold py-3 rounded-2xl transition-all duration-200 active:scale-95 group/btn border border-white/5 hover:border-transparent">
+        <Link 
+          to={`/instructors/${instructor.id}`}
+          className="w-full inline-flex items-center justify-center bg-white/5 hover:bg-yellow-500 hover:text-neutral-900 text-white font-bold py-3 rounded-2xl transition-all duration-200 active:scale-95 group/btn border border-white/5 hover:border-transparent cursor-pointer"
+        >
           View Profile
-          <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover/btn:translate-x-0.5" />
-        </button>
+          <ChevronRight className="ml-1.5 h-4 w-4 transition-transform group-hover/btn:translate-x-0.5" />
+        </Link>
       </div>
 
     </div>

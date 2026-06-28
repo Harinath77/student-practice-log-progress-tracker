@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import type { Course } from '../../types/course';
 import { Clock, BookOpen, ArrowUpRight, Music, Mic, Keyboard as PianoIcon } from 'lucide-react';
 
@@ -115,10 +116,13 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
         </div>
 
         {/* Action Button */}
-        <button className="w-full inline-flex items-center justify-center bg-white/5 hover:bg-yellow-500 hover:text-neutral-900 text-white font-bold py-3.5 rounded-2xl transition-all duration-200 active:scale-95 group/btn border border-white/5 hover:border-transparent">
+        <Link 
+          to={`/courses/${course.id}`}
+          className="w-full inline-flex items-center justify-center bg-white/5 hover:bg-yellow-500 hover:text-neutral-900 text-white font-bold py-3.5 rounded-2xl transition-all duration-200 active:scale-95 group/btn border border-white/5 hover:border-transparent cursor-pointer"
+        >
           Learn More
           <ArrowUpRight className="ml-1.5 h-4 w-4 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
-        </button>
+        </Link>
       </div>
     </div>
   );

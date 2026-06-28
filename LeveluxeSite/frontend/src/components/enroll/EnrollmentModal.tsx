@@ -1,11 +1,21 @@
-import React, { useState } from 'react';
-import { 
-  Phone, Mail, MapPin, CheckCircle, AlertCircle, Loader, 
-  Clock 
-} from 'lucide-react';
-import { enrollmentService, type EnrollmentPayload } from '../services/enrollmentService';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, CheckCircle, AlertCircle, Loader } from 'lucide-react';
+import { enrollmentService, type EnrollmentPayload } from '../../services/enrollmentService';
 
-const Contact: React.FC = () => {
+interface EnrollmentModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  defaultCourse?: string;
+  defaultLevel?: string;
+}
+
+const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
+  isOpen,
+  onClose,
+  defaultCourse = '',
+  defaultLevel = 'Beginner'
+}) => {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -21,6 +31,25 @@ const Contact: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Pre-fill course and level if default parameters are provided when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        fullName: '',
+        email: '',
+        phone: '',
+        age: '',
+        selectedCourse: defaultCourse,
+        experienceLevel: defaultLevel || 'Beginner',
+        preferredBatch: 'Morning Batch',
+        message: ''
+      });
+      setValidationErrors({});
+      setSubmitSuccess(false);
+      setSubmitError(null);
+    }
+  }, [isOpen, defaultCourse, defaultLevel]);
 
   const courseOptions = [
     "Guitar (Acoustic & Electric)",
@@ -108,6 +137,7 @@ const Contact: React.FC = () => {
     try {
       await enrollmentService.submitEnrollment(payload);
       setSubmitSuccess(true);
+      // Clear form
       setFormData({
         fullName: '',
         email: '',
@@ -119,142 +149,106 @@ const Contact: React.FC = () => {
         message: ''
       });
     } catch (err: any) {
-      console.error("Contact Form Enrollment failed:", err);
+      console.error("Enrollment failed:", err);
       setSubmitError(
         err.response?.data?.detail || 
-        "Failed to submit enrollment request. Please make sure backend FastAPI is running."
+        "Failed to submit enrollment request. Please check if the backend API is running."
       );
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // Close modal on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (isOpen) window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   return (
-    <div className="w-full flex flex-col bg-neutral-950 text-white min-h-screen">
-      
-      {/* Title Header Banner */}
-      <div className="relative w-full py-24 bg-gradient-to-br from-neutral-950 via-neutral-900 to-indigo-950 text-white text-center pt-28 border-b border-neutral-900">
-        <div className="absolute inset-0 bg-indigo-500/5 rounded-3xl blur-[120px]" />
-        <div className="relative z-10 space-y-4 max-w-3xl mx-auto px-4">
-          <span className="text-yellow-400 font-bold text-xs uppercase tracking-widest bg-white/5 border border-white/10 px-4 py-1.5 rounded-full">
-            Connect With Us
-          </span>
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight">
-            Book a Free Trial Session
-          </h1>
-          <p className="text-neutral-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed mt-2">
-            Submit your details below, select your desired instrument, and our counseling team will align you with a certified mentor.
-          </p>
-        </div>
-      </div>
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          
+          {/* Backdrop Overlay */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.85 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="absolute inset-0 bg-neutral-950 backdrop-blur-sm cursor-pointer"
+          />
 
-      {/* Main Grid Content */}
-      <div className="w-full py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start text-left">
+          {/* Modal Container */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 15 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+            className="relative bg-neutral-900 border border-neutral-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl z-10 text-left flex flex-col max-h-[90vh]"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+          >
             
-            {/* Left Column: Contact details & card (span 5) */}
-            <div className="lg:col-span-5 space-y-8">
-              
-              {/* Contact Information block */}
-              <div className="bg-neutral-900/55 border border-neutral-800 rounded-3xl p-8 space-y-8 backdrop-blur-md">
-                <h3 className="text-xl font-extrabold text-white border-b border-neutral-800 pb-4">
-                  Academy Contact Info
-                </h3>
-                
-                <div className="space-y-6">
-                  
-                  <div className="flex items-start space-x-4">
-                    <div className="p-3 bg-neutral-950 border border-neutral-800 rounded-2xl text-yellow-500 flex-shrink-0">
-                      <Phone className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Phone lines</p>
-                      <p className="text-sm font-semibold text-white mt-1">+1 (555) 019-2834</p>
-                      <p className="text-xs text-neutral-500 mt-0.5">Mon - Sat: 9:00 AM - 8:00 PM</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-4">
-                    <div className="p-3 bg-neutral-950 border border-neutral-800 rounded-2xl text-yellow-500 flex-shrink-0">
-                      <Mail className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Email Support</p>
-                      <p className="text-sm font-semibold text-white mt-1">info@leveluxe.com</p>
-                      <p className="text-xs text-neutral-500 mt-0.5">We reply within 24 hours.</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-4">
-                    <div className="p-3 bg-neutral-950 border border-neutral-800 rounded-2xl text-yellow-500 flex-shrink-0">
-                      <MapPin className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Main Campus</p>
-                      <p className="text-sm font-semibold text-white mt-1">100 Rhythm Blvd, Sound City</p>
-                      <p className="text-xs text-neutral-500 mt-0.5">Beside Metro Station, Phase 2</p>
-                    </div>
-                  </div>
-
-                </div>
-
+            {/* Header */}
+            <div className="p-6 border-b border-neutral-800 flex items-center justify-between">
+              <div>
+                <h3 id="modal-title" className="text-xl font-extrabold text-white">Enrollment Application</h3>
+                <p className="text-xs text-neutral-450 mt-1">Book your slot and start your musical journey</p>
               </div>
-
-              {/* Working Hours summary block */}
-              <div className="bg-neutral-900/30 border border-neutral-800/80 rounded-3xl p-8 space-y-4 text-xs">
-                <h4 className="font-extrabold text-white flex items-center space-x-2">
-                  <Clock className="h-4.5 w-4.5 text-yellow-500" />
-                  <span>Academy Operations</span>
-                </h4>
-                <p className="text-neutral-400 leading-relaxed">
-                  Students registered with our academy gain 24/7 access to practice labs and digital keyboards. Live coaching slots operate Monday through Saturday.
-                </p>
-              </div>
-
+              <button 
+                onClick={onClose}
+                className="text-neutral-450 hover:text-white p-2 rounded-full hover:bg-white/5 transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                aria-label="Close modal"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
 
-            {/* Right Column: Enrollment Form block (span 7) */}
-            <div className="lg:col-span-7 bg-neutral-900 border border-neutral-800 rounded-3xl p-8 backdrop-blur-md relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-yellow-500/5 rounded-full blur-2xl -z-10" />
+            {/* Scrollable Body */}
+            <div className="p-6 overflow-y-auto flex-grow space-y-6">
               
-              <h3 className="text-xl font-extrabold text-white mb-6">Trial Class & Admission Form</h3>
-              
+              {/* Success State */}
               {submitSuccess ? (
-                <div className="text-center py-16 space-y-6">
+                <div className="text-center py-12 px-4 space-y-5">
                   <div className="inline-flex p-4 bg-emerald-500/10 rounded-full border border-emerald-500/20 text-emerald-400">
                     <CheckCircle className="h-12 w-12" />
                   </div>
                   <div className="space-y-2">
-                    <h4 className="text-2xl font-bold text-white">Enrollment Request Saved!</h4>
-                    <p className="text-sm text-neutral-450 max-w-sm mx-auto leading-relaxed">
-                      Thank you for choosing Leveluxe Academy! Your registration is logged in our database system. Our faculty team will reach out via phone shortly.
+                    <h4 className="text-lg font-bold text-white">Enrollment Request Saved!</h4>
+                    <p className="text-sm text-neutral-450 max-w-xs mx-auto leading-relaxed">
+                      Thank you for submitting! Our admission team will contact you shortly via phone or email to schedule your trial class.
                     </p>
                   </div>
                   <button 
-                    onClick={() => setSubmitSuccess(false)}
-                    className="bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold px-6 py-2.5 rounded-xl transition-all"
+                    onClick={onClose}
+                    className="bg-yellow-500 hover:bg-yellow-400 text-neutral-900 font-bold px-6 py-2.5 rounded-xl transition-all active:scale-95"
                   >
-                    Submit Another Request
+                    Close Window
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-4">
                   
-                  {/* Submission Error */}
+                  {/* Submission Error Banner */}
                   {submitError && (
                     <div className="bg-red-950/25 border border-red-900/50 text-red-400 rounded-xl p-4 flex items-start space-x-3 text-xs">
                       <AlertCircle className="h-4.5 w-4.5 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <span className="font-bold">Form Submission Failed</span>
-                        <p className="mt-1">{submitError}</p>
+                      <div className="space-y-1">
+                        <span className="font-bold">Submission Error</span>
+                        <p>{submitError}</p>
                       </div>
                     </div>
                   )}
 
-                  {/* Personal details fields */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Two-Column Personal Fields */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     
+                    {/* Full Name */}
                     <div className="space-y-1.5">
                       <label htmlFor="fullName" className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Full Name *</label>
                       <input 
@@ -263,12 +257,13 @@ const Contact: React.FC = () => {
                         name="fullName"
                         value={formData.fullName}
                         onChange={handleInputChange}
-                        className={`w-full bg-neutral-950 border ${validationErrors.fullName ? 'border-red-500' : 'border-neutral-800 focus:border-yellow-500'} rounded-xl px-4 py-3.5 text-sm text-white placeholder-neutral-600 focus:outline-none`}
+                        className={`w-full bg-neutral-950 border ${validationErrors.fullName ? 'border-red-500' : 'border-neutral-800 focus:border-yellow-500'} rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none`}
                         placeholder="John Doe"
                       />
                       {validationErrors.fullName && <p className="text-[10px] text-red-400 font-medium">{validationErrors.fullName}</p>}
                     </div>
 
+                    {/* Email Address */}
                     <div className="space-y-1.5">
                       <label htmlFor="email" className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Email Address *</label>
                       <input 
@@ -277,7 +272,7 @@ const Contact: React.FC = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className={`w-full bg-neutral-950 border ${validationErrors.email ? 'border-red-500' : 'border-neutral-800 focus:border-yellow-500'} rounded-xl px-4 py-3.5 text-sm text-white placeholder-neutral-600 focus:outline-none`}
+                        className={`w-full bg-neutral-950 border ${validationErrors.email ? 'border-red-500' : 'border-neutral-800 focus:border-yellow-500'} rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none`}
                         placeholder="john@example.com"
                       />
                       {validationErrors.email && <p className="text-[10px] text-red-400 font-medium">{validationErrors.email}</p>}
@@ -285,8 +280,9 @@ const Contact: React.FC = () => {
 
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     
+                    {/* Phone Number */}
                     <div className="space-y-1.5">
                       <label htmlFor="phone" className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Phone Number *</label>
                       <input 
@@ -295,12 +291,13 @@ const Contact: React.FC = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className={`w-full bg-neutral-950 border ${validationErrors.phone ? 'border-red-500' : 'border-neutral-800 focus:border-yellow-500'} rounded-xl px-4 py-3.5 text-sm text-white placeholder-neutral-600 focus:outline-none`}
+                        className={`w-full bg-neutral-950 border ${validationErrors.phone ? 'border-red-500' : 'border-neutral-800 focus:border-yellow-500'} rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none`}
                         placeholder="+91 98765 43210"
                       />
                       {validationErrors.phone && <p className="text-[10px] text-red-400 font-medium">{validationErrors.phone}</p>}
                     </div>
 
+                    {/* Student Age */}
                     <div className="space-y-1.5">
                       <label htmlFor="age" className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Student Age *</label>
                       <input 
@@ -309,7 +306,7 @@ const Contact: React.FC = () => {
                         name="age"
                         value={formData.age}
                         onChange={handleInputChange}
-                        className={`w-full bg-neutral-950 border ${validationErrors.age ? 'border-red-500' : 'border-neutral-800 focus:border-yellow-500'} rounded-xl px-4 py-3.5 text-sm text-white placeholder-neutral-600 focus:outline-none`}
+                        className={`w-full bg-neutral-950 border ${validationErrors.age ? 'border-red-500' : 'border-neutral-800 focus:border-yellow-500'} rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none`}
                         placeholder="18"
                       />
                       {validationErrors.age && <p className="text-[10px] text-red-400 font-medium">{validationErrors.age}</p>}
@@ -317,7 +314,7 @@ const Contact: React.FC = () => {
 
                   </div>
 
-                  {/* Course list */}
+                  {/* Course Dropdown */}
                   <div className="space-y-1.5">
                     <label htmlFor="selectedCourse" className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Selected Course *</label>
                     <select 
@@ -325,7 +322,7 @@ const Contact: React.FC = () => {
                       name="selectedCourse"
                       value={formData.selectedCourse}
                       onChange={handleInputChange}
-                      className={`w-full bg-neutral-950 border ${validationErrors.selectedCourse ? 'border-red-500' : 'border-neutral-800 focus:border-yellow-500'} rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none`}
+                      className={`w-full bg-neutral-950 border ${validationErrors.selectedCourse ? 'border-red-500' : 'border-neutral-800 focus:border-yellow-500'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none`}
                     >
                       <option value="" disabled>-- Select a Music Program --</option>
                       {courseOptions.map((c) => (
@@ -335,9 +332,10 @@ const Contact: React.FC = () => {
                     {validationErrors.selectedCourse && <p className="text-[10px] text-red-400 font-medium">{validationErrors.selectedCourse}</p>}
                   </div>
 
-                  {/* Level & Batch selection */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Skill level and Batch timings */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     
+                    {/* Experience Level */}
                     <div className="space-y-1.5">
                       <label htmlFor="experienceLevel" className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Experience Level</label>
                       <select 
@@ -345,7 +343,7 @@ const Contact: React.FC = () => {
                         name="experienceLevel"
                         value={formData.experienceLevel}
                         onChange={handleInputChange}
-                        className="w-full bg-neutral-950 border border-neutral-800 focus:border-yellow-500 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none"
+                        className="w-full bg-neutral-950 border border-neutral-800 focus:border-yellow-500 rounded-xl px-4 py-3 text-sm text-white focus:outline-none"
                       >
                         {levelOptions.map((l) => (
                           <option key={l} value={l} className="bg-neutral-900">{l}</option>
@@ -353,6 +351,7 @@ const Contact: React.FC = () => {
                       </select>
                     </div>
 
+                    {/* Preferred Batch */}
                     <div className="space-y-1.5">
                       <label htmlFor="preferredBatch" className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Preferred Batch Slot</label>
                       <select 
@@ -360,7 +359,7 @@ const Contact: React.FC = () => {
                         name="preferredBatch"
                         value={formData.preferredBatch}
                         onChange={handleInputChange}
-                        className="w-full bg-neutral-950 border border-neutral-800 focus:border-yellow-500 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none"
+                        className="w-full bg-neutral-950 border border-neutral-800 focus:border-yellow-500 rounded-xl px-4 py-3 text-sm text-white focus:outline-none"
                       >
                         {batchOptions.map((b) => (
                           <option key={b} value={b} className="bg-neutral-900">{b}</option>
@@ -376,19 +375,19 @@ const Contact: React.FC = () => {
                     <textarea 
                       id="message" 
                       name="message"
-                      rows={4}
+                      rows={3}
                       value={formData.message}
                       onChange={handleInputChange}
-                      className="w-full bg-neutral-950 border border-neutral-800 focus:border-yellow-500 rounded-xl px-4 py-3.5 text-sm text-white placeholder-neutral-600 focus:outline-none resize-none"
-                      placeholder="Share your musical background or any specific times you would like to test..."
+                      className="w-full bg-neutral-950 border border-neutral-800 focus:border-yellow-500 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none resize-none"
+                      placeholder="Write notes about your music goals, instrument ownership, or queries..."
                     />
                   </div>
 
-                  {/* Submit button */}
+                  {/* Submit Button */}
                   <button 
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-yellow-500 hover:bg-yellow-400 disabled:bg-neutral-850 disabled:text-neutral-550 text-neutral-900 font-bold py-4 rounded-xl transition-all flex items-center justify-center space-x-2 cursor-pointer shadow-lg shadow-yellow-500/10 active:scale-98"
+                    className="w-full bg-yellow-500 hover:bg-yellow-400 disabled:bg-neutral-800 disabled:text-neutral-500 text-neutral-900 font-bold py-4 rounded-xl transition-all flex items-center justify-center space-x-2 cursor-pointer shadow-lg shadow-yellow-500/5 active:scale-98"
                   >
                     {isSubmitting ? (
                       <>
@@ -405,12 +404,12 @@ const Contact: React.FC = () => {
 
             </div>
 
-          </div>
-        </div>
-      </div>
+          </motion.div>
 
-    </div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 };
 
-export default Contact;
+export default EnrollmentModal;

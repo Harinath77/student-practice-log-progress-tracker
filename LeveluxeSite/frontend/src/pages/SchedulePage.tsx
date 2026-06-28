@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useSchedule } from '../hooks/useSchedule';
 import ScheduleHero from '../components/schedule/ScheduleHero';
 import TodayClasses from '../components/schedule/TodayClasses';
@@ -10,8 +10,14 @@ import ScheduleSkeleton from '../components/schedule/ScheduleSkeleton';
 import EmptySchedule from '../components/schedule/EmptySchedule';
 import { AlertCircle, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import EnrollmentModal from '../components/enroll/EnrollmentModal';
 
 export const SchedulePage: React.FC = () => {
+  const [isEnrollOpen, setIsEnrollOpen] = useState(false);
+  const [enrollCourse, setEnrollCourse] = useState('');
+  const [enrollLevel, setEnrollLevel] = useState('Beginner');
+
   const {
     schedules,
     todaySchedules,
@@ -141,7 +147,14 @@ export const SchedulePage: React.FC = () => {
                 {schedules.length === 0 ? (
                   <EmptySchedule onReset={handleResetFilters} />
                 ) : (
-                  <WeeklyScheduleTable schedules={schedules} />
+                  <WeeklyScheduleTable 
+                    schedules={schedules} 
+                    onEnroll={(slot) => {
+                      setEnrollCourse(slot.course_name);
+                      setEnrollLevel(slot.level);
+                      setIsEnrollOpen(true);
+                    }}
+                  />
                 )}
               </section>
             </>
@@ -171,22 +184,30 @@ export const SchedulePage: React.FC = () => {
             Reserve your weekly class slot. Get paired with our certified instructors and start learning on your schedule.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-            <a
-              href="/contact"
+            <Link
+              to="/contact"
               className="inline-flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-neutral-900 font-bold px-8 py-4 rounded-xl transition-all duration-200 shadow-lg shadow-yellow-500/20 active:scale-95 group cursor-pointer"
             >
               Enroll Today
               <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </a>
-            <a
-              href="/courses"
+            </Link>
+            <Link
+              to="/courses"
               className="inline-flex items-center justify-center bg-white/5 hover:bg-white/10 text-white font-semibold px-8 py-4 rounded-xl border border-white/10 transition-all duration-200 active:scale-95 cursor-pointer"
             >
               Explore Courses
-            </a>
+            </Link>
           </div>
         </div>
       </section>
+
+      {/* Enrollment Modal */}
+      <EnrollmentModal
+        isOpen={isEnrollOpen}
+        onClose={() => setIsEnrollOpen(false)}
+        defaultCourse={enrollCourse}
+        defaultLevel={enrollLevel}
+      />
     </div>
   );
 };

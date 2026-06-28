@@ -1,8 +1,13 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, MessageSquare } from 'lucide-react';
 
-const CTASection: React.FC = () => {
+interface CTASectionProps {
+  onEnrollClick?: () => void;
+}
+
+const CTASection: React.FC<CTASectionProps> = ({ onEnrollClick }) => {
   return (
     <section id="enroll" className="relative w-full py-24 overflow-hidden bg-gradient-to-br from-neutral-950 via-neutral-900 to-indigo-950 text-white text-center border-t border-neutral-900 shadow-xl">
       {/* Glow Effects */}
@@ -36,20 +41,20 @@ const CTASection: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="flex flex-wrap items-center justify-center gap-4 pt-2"
         >
-          <a
-            href="#enroll-form"
-            className="inline-flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-neutral-900 font-bold px-8 py-4 rounded-xl transition-all duration-200 shadow-lg shadow-yellow-500/20 active:scale-95 group"
+          <button
+            onClick={onEnrollClick}
+            className="inline-flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-neutral-900 font-bold px-8 py-4 rounded-xl transition-all duration-200 shadow-lg shadow-yellow-500/20 active:scale-95 group cursor-pointer"
           >
             Enroll Now
             <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-          </a>
-          <a
-            href="/contact"
-            className="inline-flex items-center justify-center bg-white/10 hover:bg-white/15 text-white font-semibold px-8 py-4 rounded-xl border border-white/20 transition-all duration-200 active:scale-95 group"
+          </button>
+          <Link
+            to="/contact"
+            className="inline-flex items-center justify-center bg-white/10 hover:bg-white/15 text-white font-semibold px-8 py-4 rounded-xl border border-white/20 transition-all duration-200 active:scale-95 group cursor-pointer"
           >
             Contact Us
             <MessageSquare className="ml-2 h-5 w-5 text-neutral-400 group-hover:text-white transition-colors" />
-          </a>
+          </Link>
         </motion.div>
 
       </div>
