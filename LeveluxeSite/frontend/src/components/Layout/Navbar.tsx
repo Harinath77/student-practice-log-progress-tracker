@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Menu, X, Music } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,7 +46,7 @@ const Navbar: React.FC = () => {
               <span className="tracking-tight text-white font-extrabold">LEVELUXE</span>
             </NavLink>
           </div>
-
+ 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
@@ -56,8 +58,23 @@ const Navbar: React.FC = () => {
                 {link.name}
               </NavLink>
             ))}
+            {isAuthenticated ? (
+              <NavLink
+                to={user?.role.toLowerCase() === 'admin' ? '/admin' : '/dashboard'}
+                className="bg-yellow-500 hover:bg-yellow-400 text-neutral-900 font-bold px-4 py-2 rounded-xl text-xs transition-all active:scale-95"
+              >
+                Dashboard
+              </NavLink>
+            ) : (
+              <NavLink
+                to="/login"
+                className="bg-white/5 hover:bg-white/10 text-white font-semibold px-4 py-2 rounded-xl border border-white/10 text-xs transition-all active:scale-95"
+              >
+                Sign In
+              </NavLink>
+            )}
           </div>
-
+ 
           {/* Mobile Menu Button */}
           <div className="flex items-center md:hidden">
             <button
@@ -70,7 +87,7 @@ const Navbar: React.FC = () => {
           </div>
         </div>
       </div>
-
+ 
       {/* Mobile Navigation Dropdown */}
       {isOpen && (
         <div className="md:hidden bg-neutral-950/95 border-t border-neutral-900 px-2 pt-2 pb-4 space-y-1 backdrop-blur-lg">
@@ -90,6 +107,25 @@ const Navbar: React.FC = () => {
               {link.name}
             </NavLink>
           ))}
+          <div className="border-t border-neutral-900 pt-2 mt-2 px-3">
+            {isAuthenticated ? (
+              <NavLink
+                to={user?.role.toLowerCase() === 'admin' ? '/admin' : '/dashboard'}
+                onClick={() => setIsOpen(false)}
+                className="block text-center bg-yellow-500 hover:bg-yellow-400 text-neutral-900 font-bold py-2 rounded-xl text-sm transition-all"
+              >
+                Dashboard
+              </NavLink>
+            ) : (
+              <NavLink
+                to="/login"
+                onClick={() => setIsOpen(false)}
+                className="block text-center bg-white/5 hover:bg-white/10 text-white font-semibold py-2 rounded-xl border border-white/10 text-sm transition-all"
+              >
+                Sign In
+              </NavLink>
+            )}
+          </div>
         </div>
       )}
     </nav>
