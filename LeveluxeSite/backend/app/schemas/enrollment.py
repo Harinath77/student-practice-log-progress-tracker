@@ -11,9 +11,13 @@ class EnrollmentBase(BaseModel):
     experience_level: str
     preferred_batch: str
     message: Optional[str] = None
+    status: Optional[str] = "Pending"
 
 class EnrollmentCreate(EnrollmentBase):
     pass
+
+class EnrollmentUpdate(BaseModel):
+    status: str # "Approved" or "Rejected"
 
 class Enrollment(EnrollmentBase):
     id: int

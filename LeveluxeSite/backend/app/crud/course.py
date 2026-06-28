@@ -15,3 +15,19 @@ def create_course(db: Session, course: CourseCreate):
     db.commit()
     db.refresh(db_course)
     return db_course
+
+def update_course(db: Session, db_course: Course, course_update: CourseCreate):
+    update_data = course_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_course, key, value)
+    db.commit()
+    db.refresh(db_course)
+    return db_course
+
+def delete_course(db: Session, course_id: int) -> bool:
+    db_course = get_course(db, course_id)
+    if db_course:
+        db.delete(db_course)
+        db.commit()
+        return True
+    return False

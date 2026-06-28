@@ -9,6 +9,8 @@ from app.models.course import Course
 from app.models.instructor import Instructor
 from app.models.schedule import Schedule
 from app.models.enrollment import Enrollment
+from app.models.user import User
+from app.auth.hash import get_password_hash
 
 def init_db():
     print("Initializing database tables...")
@@ -16,6 +18,24 @@ def init_db():
     
     db = SessionLocal()
     try:
+        # Seeding Admin
+        if db.query(User).filter(User.role == "Admin").count() == 0:
+            print("Seeding database with default administrator...")
+            admin_user = User(
+                full_name="Leveluxe Administrator",
+                email="admin@leveluxe.com",
+                phone="+91 99999 88888",
+                password_hash=get_password_hash("Admin@123"),
+                role="Admin",
+                is_active=True,
+                is_verified=True
+            )
+            db.add(admin_user)
+            db.commit()
+            print("Default admin successfully seeded!")
+        else:
+            print("Admin already exists. Skipping.")
+
         # Seeding Courses
         if db.query(Course).count() == 0:
             print("Seeding database with modern music academy courses...")

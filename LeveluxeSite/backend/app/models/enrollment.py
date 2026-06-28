@@ -14,4 +14,5 @@ class Enrollment(Base):
     experience_level = Column(String, nullable=False)
     preferred_batch = Column(String, nullable=False)
     message = Column(Text, nullable=True)
+    status = Column(String, default="Pending", nullable=False) # "Pending", "Approved", "Rejected"
     created_at = Column(DateTime, default=datetime.utcnow)

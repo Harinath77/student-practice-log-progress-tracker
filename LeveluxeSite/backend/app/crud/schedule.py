@@ -18,3 +18,19 @@ def create_schedule(db: Session, schedule: ScheduleCreate):
     db.commit()
     db.refresh(db_schedule)
     return db_schedule
+
+def update_schedule(db: Session, db_schedule: Schedule, schedule_update: ScheduleCreate):
+    update_data = schedule_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_schedule, key, value)
+    db.commit()
+    db.refresh(db_schedule)
+    return db_schedule
+
+def delete_schedule(db: Session, schedule_id: int) -> bool:
+    db_schedule = get_schedule(db, schedule_id)
+    if db_schedule:
+        db.delete(db_schedule)
+        db.commit()
+        return True
+    return False
