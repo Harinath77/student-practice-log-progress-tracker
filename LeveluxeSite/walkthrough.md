@@ -1,27 +1,30 @@
-# Leveluxe Music Academy Mandatory Authentication Walkthrough
+# Leveluxe Music Academy Unification Walkthrough
 
-I have enforced mandatory site-wide authentication, mapped appropriate public route exclusions, implemented location memory redirection on successful login, and designed a premium user initials avatar dropdown on the header Navbar.
+I have integrated student and administrator authentication into a single common `/login` gate, configured a dynamic navbar that modifies its links based on the active user's session role, and added audit logging hooks to backend login/logout requests.
 
-## Key Changes
+## Implementation Details
 
-### 1. Mandatory Route locks ([App.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/App.tsx))
-* Moved Home (`/`), Courses (`/courses`, `/courses/:id`), Instructors (`/instructors`, `/instructors/:id`), Schedules (`/schedule`), and Contacts (`/contact`) pages inside the protected routing group wrapped by `AuthGuard`.
-* Left only `/login`, `/admin/login`, `/register`, `/signup`, `/forgot-password`, and `/reset-password` as publicly accessible paths.
-* Mapped `/signup` as a public route alias rendering the Register page.
+### 1. Unified Authentication Gate ([Login.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/pages/Login.tsx))
+* Removed the "Admin Workspace" / "Student Portal" selector switch.
+* Configured the login handler to process both student and administrator accounts at `/login`.
+* Dynamic redirection:
+  * Admins (`role == "admin"`) are automatically navigated to `/admin/dashboard`.
+  * Students (`role == "student"` / `"user"`) are navigated to their requested destination (from location memory) or home `/`.
 
-### 2. Location Redirection Memory ([AuthGuard.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/guards/AuthGuard.tsx))
-* Updated `AuthGuard` to read and preserve the user's currently requested path in React Router's location state when redirecting to `/login`.
-* Enabled the `Login` page to retrieve this location state on success, automatically redirecting the user back to their originally requested program, schedule, or contact page.
+### 2. Deletion of Separate Admin Login ([App.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/App.tsx))
+* Deleted the separate `/admin/login` page ([AdminLogin.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/pages/AdminLogin.tsx)) from disk.
+* Removed the `/admin/login` route from `App.tsx` routes.
+* Mapped both `/admin` and `/admin/dashboard` to `<AdminDashboard />` inside the protected `AdminGuard` wrapper.
 
-### 3. User Avatar and Settings Dropdown ([Navbar.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/components/Layout/Navbar.tsx))
-* Re-coded the header navigation menu:
-  * When authenticated, the guest "Sign In" and "Sign Up" links are hidden.
-  * Replaced them with the user's name and a gradient-filled circle avatar presenting their initials (e.g. "Leveluxe Administrator" -> "LA", "Arjun Rao" -> "AR").
-  * Designed a click-based dropdown menu showing operations links to:
-    * **My Profile**
-    * **Account Settings**
-    * **Admin Console** (only visible to admins, pointing to `/admin`)
-    * **Log Out** button (which clears local tokens, resets profile contexts, and directs back to `/login`).
+### 3. Role-Based Dynamic Navbar Links ([Navbar.tsx](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/frontend/src/components/Layout/Navbar.tsx))
+* **Guest (Not logged in)**: Renders only **Sign In** and **Sign Up** buttons.
+* **Student Logged In**: Renders **Profile**, **My Courses** (redirects to `/dashboard`), **Schedule**, and a **Logout** button.
+* **Admin Logged In**: Renders **Admin Dashboard** (redirects to `/admin/dashboard`) and a **Logout** button.
+
+### 4. Login / Logout Audit logs ([auth.py](file:///c:/Users/talar/OneDrive/Attachments/music/LeveluxeSite/backend/app/routers/auth.py))
+* Added logging hooks using the `Request` object:
+  * When an administrator successfully logs in, it records an entry `"Admin logged in"` in the database audit log.
+  * When an administrator logs out, it decodes the refresh token payload to identify their profile and records an entry `"Admin logged out"` in the database audit log.
 
 ---
 
@@ -29,4 +32,4 @@ I have enforced mandatory site-wide authentication, mapped appropriate public ro
 
 ### Production Compilation
 * Ran `npm run build` in the `frontend` directory.
-* **Result**: Compiled and bundled successfully inside `1.08s` with `0` warnings/errors.
+* **Result**: Compiled and bundled successfully inside `1.14s` with `0` warnings/errors.

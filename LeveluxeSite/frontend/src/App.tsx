@@ -18,7 +18,6 @@ import ResetPassword from './pages/ResetPassword';
 import UserDashboard from './pages/UserDashboard';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
-import AdminLogin from './pages/AdminLogin';
 import AuthGuard from './guards/AuthGuard';
 import AdminGuard from './guards/AdminGuard';
 
@@ -40,7 +39,6 @@ function App() {
           <Routes>
             {/* Guest Auth routes */}
             <Route path="/login" element={<Login />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/register" element={<Register />} />
             <Route path="/signup" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />

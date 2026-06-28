@@ -32,13 +32,14 @@ export const Login: React.FC = () => {
     try {
       const profile = await login(email, password, rememberMe);
       
-      // The public login page should only allow Student/User login
-      if (profile.role.toLowerCase() === 'admin') {
-        // Log out immediately and show login error to hide the admin portal existence
-        await login('', ''); // Dummy request or just clear tokens
+      const role = profile.role.toLowerCase();
+      if (role === 'admin') {
+        navigate('/admin/dashboard', { replace: true });
       } else {
         const from = location.state?.from?.pathname;
-        navigate(from || '/dashboard', { replace: true });
+        // Avoid redirecting normal users to admin dashboard
+        const redirectPath = from && !from.startsWith('/admin') ? from : '/';
+        navigate(redirectPath, { replace: true });
       }
     } catch (err: any) {
       setError('Incorrect email or password.');

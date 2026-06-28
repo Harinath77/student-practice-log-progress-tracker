@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 import uuid
@@ -18,6 +18,7 @@ from app.auth.hash import verify_password
 from app.auth.jwt import create_access_token, create_refresh_token as create_jwt_refresh, decode_token
 from app.dependencies.auth import get_current_user
 from app.models.user import User
+from app.utils.audit import log_admin_action
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -37,7 +38,7 @@ def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 @router.post("/login", response_model=TokenResponse)
-def login_user(credentials: UserLogin, db: Session = Depends(get_db)):
+def login_user(credentials: UserLogin, request: Request, db: Session = Depends(get_db)):
     user = get_user_by_email(db, email=credentials.email)
     if not user or not verify_password(credentials.password, user.password_hash):
         raise HTTPException(
@@ -67,6 +68,12 @@ def login_user(credentials: UserLogin, db: Session = Depends(get_db)):
     # Store refresh token in database
     expires_at = datetime.now(timezone.utc) + timedelta(days=expiry_days)
     create_refresh_token(db, user_id=user.id, token=refresh_token_str, expires_at=expires_at)
+
+    if user.role.lower() == "admin":
+        log_admin_action(
+            db=db, admin=user, action="Admin logged in",
+            resource="Admin Session", old_values=None, new_values=None, request=request
+        )
     
     return TokenResponse(
         access_token=access_token,
@@ -111,11 +118,19 @@ def refresh_access_token(refresh_in: TokenRefreshRequest, db: Session = Depends(
     )
 
 @router.post("/logout")
-def logout(refresh_in: TokenRefreshRequest, db: Session = Depends(get_db)):
+def logout(refresh_in: TokenRefreshRequest, request: Request, db: Session = Depends(get_db)):
+    # Identify user from refresh token for audit logs
+    payload = decode_token(refresh_in.refresh_token)
+    if payload:
+        email = payload.get("sub")
+        user = get_user_by_email(db, email=email)
+        if user and user.role.lower() == "admin":
+            log_admin_action(
+                db=db, admin=user, action="Admin logged out",
+                resource="Admin Session", old_values=None, new_values=None, request=request
+            )
+            
     revoked = revoke_refresh_token(db, token=refresh_in.refresh_token)
-    if not revoked:
-        # Silently succeed or return status
-        pass
     return {"message": "Successfully logged out."}
 
 @router.post("/forgot-password")
