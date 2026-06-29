@@ -37,12 +37,18 @@ export const Login: React.FC = () => {
         navigate('/admin/dashboard', { replace: true });
       } else {
         const from = location.state?.from?.pathname;
-        // Avoid redirecting normal users to admin dashboard
-        const redirectPath = from && !from.startsWith('/admin') ? from : '/';
+        // Avoid redirecting normal users to admin routes; default to /dashboard
+        const redirectPath = from && !from.startsWith('/admin') ? from : '/dashboard';
         navigate(redirectPath, { replace: true });
       }
     } catch (err: any) {
-      setError('Incorrect email or password.');
+      if (err.response) {
+        setError(err.response.data?.detail || 'Incorrect email or password.');
+      } else if (err.request) {
+        setError('Cannot connect to the server. Please ensure the backend is running and reachable.');
+      } else {
+        setError(err.message || 'An unexpected error occurred.');
+      }
     } finally {
       setIsLoading(false);
     }

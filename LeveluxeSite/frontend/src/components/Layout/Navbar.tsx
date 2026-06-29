@@ -40,14 +40,14 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between h-10 items-center">
           {/* Logo and Brand */}
           <div className="flex items-center">
-            <NavLink to="/" className="flex items-center space-x-2 font-bold text-xl">
-              <Music4 className="h-6 w-6 text-yellow-500" />
+            <NavLink to="/" className="flex items-center space-x-2 font-bold text-xl whitespace-nowrap">
+              <Music4 className="h-6 w-6 text-yellow-500 flex-shrink-0" />
               <span className="tracking-tight text-white font-extrabold">LEVELUXE</span>
             </NavLink>
           </div>
  
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-5 flex-shrink-0">
             {isAuthenticated && user ? (
               user.role.toLowerCase() === 'admin' ? (
                 /* Admin Navigation Links */
@@ -56,13 +56,13 @@ const Navbar: React.FC = () => {
                     to="/admin/dashboard"
                     className={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
                   >
-                    Admin Dashboard
+                    <span className="whitespace-nowrap">Admin Dashboard</span>
                   </NavLink>
                   <button
                     onClick={handleLogout}
-                    className="text-neutral-350 hover:text-red-400 transition-colors duration-205 text-sm font-bold flex items-center space-x-1.5 cursor-pointer focus:outline-none"
+                    className="text-neutral-350 hover:text-red-400 transition-colors duration-205 text-sm font-bold flex items-center space-x-1.5 cursor-pointer focus:outline-none whitespace-nowrap"
                   >
-                    <LogOut className="h-4.5 w-4.5" />
+                    <LogOut className="h-4.5 w-4.5 flex-shrink-0" />
                     <span>Logout</span>
                   </button>
                 </>
@@ -73,41 +73,41 @@ const Navbar: React.FC = () => {
                     to="/profile"
                     className={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
                   >
-                    Profile
+                    <span className="whitespace-nowrap">Profile</span>
                   </NavLink>
                   <NavLink
                     to="/dashboard"
                     className={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
                   >
-                    My Courses
+                    <span className="whitespace-nowrap">My Courses</span>
                   </NavLink>
                   <NavLink
                     to="/schedule"
                     className={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
                   >
-                    Schedule
+                    <span className="whitespace-nowrap">Schedule</span>
                   </NavLink>
                   <button
                     onClick={handleLogout}
-                    className="text-neutral-350 hover:text-red-400 transition-colors duration-205 text-sm font-bold flex items-center space-x-1.5 cursor-pointer focus:outline-none"
+                    className="text-neutral-350 hover:text-red-400 transition-colors duration-205 text-sm font-bold flex items-center space-x-1.5 cursor-pointer focus:outline-none whitespace-nowrap"
                   >
-                    <LogOut className="h-4.5 w-4.5" />
+                    <LogOut className="h-4.5 w-4.5 flex-shrink-0" />
                     <span>Logout</span>
                   </button>
                 </>
               )
             ) : (
               /* Guest Actions */
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-3 flex-shrink-0">
                 <NavLink
                   to="/login"
-                  className="bg-white/5 hover:bg-white/10 text-white font-semibold px-4 py-2 rounded-xl border border-white/10 text-xs transition-all active:scale-95"
+                  className="bg-white/5 hover:bg-white/10 text-white font-semibold px-4 py-2 rounded-xl border border-white/10 text-xs transition-all active:scale-95 whitespace-nowrap"
                 >
                   Sign In
                 </NavLink>
                 <NavLink
                   to="/register"
-                  className="bg-yellow-500 hover:bg-yellow-400 text-neutral-900 font-bold px-4 py-2 rounded-xl text-xs transition-all active:scale-95"
+                  className="bg-yellow-500 hover:bg-yellow-400 text-neutral-900 font-bold px-4 py-2 rounded-xl text-xs transition-all active:scale-95 whitespace-nowrap"
                 >
                   Sign Up
                 </NavLink>

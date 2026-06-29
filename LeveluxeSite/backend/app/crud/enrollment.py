@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from app.models.enrollment import Enrollment
 from app.schemas.enrollment import EnrollmentCreate
 
@@ -10,11 +11,12 @@ def create_enrollment(db: Session, enrollment: EnrollmentCreate):
     db.add(db_enrollment)
     db.commit()
     db.refresh(db_enrollment)
+    return db_enrollment
 def get_enrollment(db: Session, enrollment_id: int):
     return db.query(Enrollment).filter(Enrollment.id == enrollment_id).first()
 
 def get_user_enrollments(db: Session, email: str):
-    return db.query(Enrollment).filter(Enrollment.email.lower() == email.lower()).all()
+    return db.query(Enrollment).filter(func.lower(Enrollment.email) == email.lower()).all()
 
 def update_enrollment_status(db: Session, db_enrollment: Enrollment, status: str):
     db_enrollment.status = status

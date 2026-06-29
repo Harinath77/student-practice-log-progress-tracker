@@ -70,6 +70,21 @@ def get_analytics_metrics(db: Session = Depends(get_db)) -> Dict[str, Any]:
             "status": en.status
         })
 
+    # Recent system activities (audit logs)
+    from app.models.audit_log import AuditLog
+    recent_logs = db.query(AuditLog).order_by(AuditLog.timestamp.desc()).limit(10).all()
+    recent_activity_list = []
+    for log in recent_logs:
+        recent_activity_list.append({
+            "id": log.id,
+            "timestamp": log.timestamp.isoformat() if log.timestamp else None,
+            "admin_name": log.admin_name,
+            "action": log.action,
+            "resource": log.resource,
+            "ip_address": log.ip_address,
+            "user_agent": log.user_agent
+        })
+
     return {
         "total_students": total_students,
         "total_courses": total_courses,
@@ -77,7 +92,8 @@ def get_analytics_metrics(db: Session = Depends(get_db)) -> Dict[str, Any]:
         "total_enrollments": total_enrollments,
         "pending_enrollments": pending_enrollments,
         "today_classes": today_classes_list,
-        "recent_enrollments": recent_list
+        "recent_enrollments": recent_list,
+        "recent_activity": recent_activity_list
     }
 
 # --- User Management ---

@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
+from typing import Optional
+from pydantic import BaseModel
 import uuid
 
 from app.database import get_db
@@ -8,7 +10,7 @@ from app.schemas.user import (
     UserCreate, UserResponse, UserLogin, 
     ChangePasswordRequest, ForgotPasswordRequest, ResetPasswordRequest
 )
-from app.schemas.token import TokenResponse, TokenRefreshRequest
+from app.schemas.token import TokenResponse, TokenRefreshRequest, UserInToken
 from app.crud.user import (
     create_user, get_user_by_email, update_last_login, 
     update_user, get_password_hash
@@ -39,10 +41,12 @@ def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=TokenResponse)
 def login_user(credentials: UserLogin, request: Request, db: Session = Depends(get_db)):
+    print(f"[DEBUG LOGIN] email='{credentials.email}', password='{credentials.password}'")
     user = get_user_by_email(db, email=credentials.email)
     if not user or not verify_password(credentials.password, user.password_hash):
+        print(f"[DEBUG LOGIN] Failed verification. User found: {user is not None}")
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password."
         )
     
@@ -79,7 +83,13 @@ def login_user(credentials: UserLogin, request: Request, db: Session = Depends(g
         access_token=access_token,
         refresh_token=refresh_token_str,
         expires_in=30 * 60, # 30 minutes in seconds
-        role=user.role
+        role=user.role,
+        user=UserInToken(
+            id=user.id,
+            name=user.full_name,
+            email=user.email,
+            role=user.role
+        )
     )
 
 @router.post("/refresh", response_model=TokenResponse)
@@ -114,7 +124,13 @@ def refresh_access_token(refresh_in: TokenRefreshRequest, db: Session = Depends(
         access_token=access_token,
         refresh_token=refresh_in.refresh_token,
         expires_in=30 * 60,
-        role=user.role
+        role=user.role,
+        user=UserInToken(
+            id=user.id,
+            name=user.full_name,
+            email=user.email,
+            role=user.role
+        )
     )
 
 @router.post("/logout")
@@ -137,16 +153,15 @@ def logout(refresh_in: TokenRefreshRequest, request: Request, db: Session = Depe
 def forgot_password(req: ForgotPasswordRequest, db: Session = Depends(get_db)):
     user = get_user_by_email(db, email=req.email)
     if not user:
-        # For security reasons, do not reveal if email exists. Say check email.
+        # For security reasons, do not reveal if email exists.
         return {"message": "If the email is registered, a password reset link has been sent."}
     
-    # Simulate a reset token for this user
-    reset_token = f"reset-{uuid.uuid4()}"
-    # In a real environment, we'd email this. We will return it or log it so client can simulate.
+    # Embed the user email in the simulated token so reset-password can resolve the correct user
+    reset_token = f"reset-{user.email}"
     print(f"PASSWORD RESET SIMULATION FOR {user.email}: reset-token = {reset_token}")
     return {
         "message": "If the email is registered, a password reset link has been sent.",
-        "simulated_token": reset_token # Provided for front-end simulation testing!
+        "simulated_token": reset_token  # Provided for front-end simulation testing!
     }
 
 @router.post("/reset-password")
@@ -203,4 +218,25 @@ def change_password(req: ChangePasswordRequest, current_user: User = Depends(get
 
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+class ProfileUpdateRequest(BaseModel):
+    full_name: Optional[str] = None
+    phone: Optional[str] = None
+
+@router.put("/profile", response_model=UserResponse)
+def update_own_profile(
+    profile_in: ProfileUpdateRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Authenticated users (any role) can update their own name and phone."""
+    if profile_in.full_name is not None:
+        current_user.full_name = profile_in.full_name
+    if profile_in.phone is not None:
+        current_user.phone = profile_in.phone
+    from datetime import datetime
+    current_user.updated_at = datetime.utcnow()
+    db.commit()
+    db.refresh(current_user)
     return current_user

@@ -6,7 +6,7 @@ export interface UserProfile {
   full_name: string;
   email: string;
   phone: string | null;
-  role: 'Admin' | 'Student';
+  role: 'Admin' | 'Student' | 'admin' | 'user';
   is_active: boolean;
   is_verified: boolean;
   created_at: string;
@@ -101,7 +101,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateProfile = async (data: { full_name?: string; phone?: string | null }): Promise<UserProfile> => {
     if (!user) throw new Error('Not authenticated');
-    const response = await apiClient.put<UserProfile>(`/admin/users/${user.id}`, data);
+    const response = await apiClient.put<UserProfile>('/auth/profile', data);
     setUser(response.data);
     return response.data;
   };

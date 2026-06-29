@@ -545,7 +545,7 @@ export const AdminDashboard: React.FC = () => {
         <header className="bg-neutral-900/60 border-b border-neutral-850/80 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 backdrop-blur-md sticky top-0 z-30">
           <div>
             <span className="text-[10px] text-yellow-500 uppercase tracking-widest font-black bg-yellow-500/10 px-2 py-0.5 rounded border border-yellow-500/20">Secure Area</span>
-            <h1 className="text-xl sm:text-2xl font-black text-white mt-1.5 capitalize">{activeTab} Workspace</h1>
+            <h1 className="text-xl sm:text-2xl font-black text-white mt-1.5 capitalize whitespace-nowrap">{activeTab}&nbsp;Workspace</h1>
           </div>
           <div className="flex items-center gap-3 w-full sm:w-auto">
             {/* Quick Action triggers based on context */}
@@ -575,9 +575,9 @@ export const AdminDashboard: React.FC = () => {
             )}
             
             {/* Active Admin Details */}
-            <div className="bg-neutral-950 border border-neutral-850 px-4 py-2 rounded-xl text-xs flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="font-semibold text-neutral-350">{currentAdmin?.full_name}</span>
+            <div className="bg-neutral-950 border border-neutral-850 px-4 py-2 rounded-xl text-xs flex items-center gap-2 max-w-[180px] min-w-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" />
+              <span className="font-semibold text-neutral-350 truncate">{currentAdmin?.full_name}</span>
             </div>
           </div>
         </header>
@@ -611,18 +611,18 @@ export const AdminDashboard: React.FC = () => {
               {activeTab === 'dashboard' && analytics && (
                 <div className="space-y-8">
                   {/* Dashboard metrics widgets */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                     {[
-                      { label: 'Active Students', value: analytics.total_students, color: 'text-indigo-400', bg: 'bg-indigo-500/10' },
-                      { label: 'Total Programs', value: analytics.total_courses, color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
-                      { label: 'Academy Coaches', value: analytics.total_instructors, color: 'text-emerald-450', bg: 'bg-emerald-500/10' },
-                      { label: 'Total Registrations', value: analytics.total_enrollments, color: 'text-rose-400', bg: 'bg-rose-500/10' },
-                      { label: 'Pending Review', value: analytics.pending_enrollments, color: 'text-yellow-500', bg: 'bg-yellow-500/10' }
+                      { label: 'Students', value: analytics.total_students, color: 'text-indigo-400', bg: 'bg-indigo-500/10' },
+                      { label: 'Programs', value: analytics.total_courses, color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
+                      { label: 'Coaches', value: analytics.total_instructors, color: 'text-emerald-450', bg: 'bg-emerald-500/10' },
+                      { label: 'Enrollments', value: analytics.total_enrollments, color: 'text-rose-400', bg: 'bg-rose-500/10' },
+                      { label: 'Pending', value: analytics.pending_enrollments, color: 'text-yellow-500', bg: 'bg-yellow-500/10' }
                     ].map((stat, idx) => (
-                      <div key={idx} className="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 shadow-lg flex flex-col justify-between space-y-3 relative overflow-hidden">
-                        <div className="flex justify-between items-start">
-                          <span className="text-[10px] text-neutral-450 font-bold uppercase tracking-wider">{stat.label}</span>
-                          <span className={`p-2 rounded-xl ${stat.bg} ${stat.color}`}>
+                      <div key={idx} className="bg-neutral-900 border border-neutral-800 rounded-3xl p-5 shadow-lg flex flex-col justify-between space-y-3 relative overflow-hidden">
+                        <div className="flex justify-between items-start gap-2">
+                          <span className="text-[10px] text-neutral-450 font-bold uppercase tracking-wider leading-tight">{stat.label}</span>
+                          <span className={`p-2 rounded-xl flex-shrink-0 ${stat.bg} ${stat.color}`}>
                             <LayoutDashboard className="h-4 w-4" />
                           </span>
                         </div>
@@ -755,12 +755,12 @@ export const AdminDashboard: React.FC = () => {
                   <div className="overflow-x-auto text-xs">
                     <table className="w-full text-left divide-y divide-neutral-800">
                       <thead>
-                        <tr className="text-neutral-450 font-bold uppercase tracking-wider text-[10px]">
-                          <th className="pb-3 pl-3">Student Info</th>
-                          <th className="pb-3">Program Details</th>
-                          <th className="pb-3">Batch Info</th>
-                          <th className="pb-3">Verification</th>
-                          <th className="pb-3 pr-3 text-right">Approve / Reject Action</th>
+                        <tr className="text-neutral-450 font-bold uppercase tracking-wider text-[10px] whitespace-nowrap">
+                          <th className="pb-3 pl-3">Student</th>
+                          <th className="pb-3">Program</th>
+                          <th className="pb-3">Batch</th>
+                          <th className="pb-3">Status</th>
+                          <th className="pb-3 pr-3 text-right">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-neutral-800/60">
@@ -774,17 +774,18 @@ export const AdminDashboard: React.FC = () => {
                           })
                           .map((en) => (
                             <tr key={en.id} className="hover:bg-white/5 transition-colors">
-                              <td className="py-3.5 pl-3">
-                                <span className="font-bold text-white text-sm">{en.full_name}</span> <br />
-                                <span className="text-[10px] text-neutral-400">{en.email} • {en.phone}</span>
+                              <td className="py-3.5 pl-3 min-w-[140px]">
+                                <span className="font-bold text-white text-sm block truncate max-w-[160px]">{en.full_name}</span>
+                                <span className="text-[10px] text-neutral-400 block truncate max-w-[160px]">{en.email}</span>
+                                <span className="text-[10px] text-neutral-500">{en.phone}</span>
                               </td>
-                              <td className="py-3.5 font-bold text-neutral-300">
-                                {en.selected_course} <br />
-                                <span className="text-[10px] text-neutral-500 font-normal">Level: {en.experience_level} • Age: {en.age}</span>
+                              <td className="py-3.5 min-w-[120px]">
+                                <span className="font-bold text-neutral-300 block truncate max-w-[150px]">{en.selected_course}</span>
+                                <span className="text-[10px] text-neutral-500 font-normal whitespace-nowrap">Lvl: {en.experience_level} • Age: {en.age}</span>
                               </td>
-                              <td className="py-3.5 text-neutral-400">
-                                {en.preferred_batch} <br />
-                                <span className="text-[9px] text-neutral-500">Booked: {new Date(en.created_at).toLocaleDateString()}</span>
+                              <td className="py-3.5 min-w-[110px]">
+                                <span className="text-neutral-400 block whitespace-nowrap">{en.preferred_batch}</span>
+                                <span className="text-[9px] text-neutral-500 whitespace-nowrap">Booked: {new Date(en.created_at).toLocaleDateString()}</span>
                               </td>
                               <td className="py-3.5">
                                 <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
@@ -975,13 +976,13 @@ export const AdminDashboard: React.FC = () => {
                         </div>
                         <p className="text-xs text-neutral-300 font-semibold">{i.qualification}</p>
                         <p className="text-[11px] text-neutral-450 line-clamp-3 leading-relaxed">{i.bio}</p>
-                        <div className="pt-2 text-xs text-neutral-400 flex justify-between">
-                          <span>Experience: {i.experience_years} Years</span>
-                          <span>Languages: {i.languages}</span>
+                        <div className="pt-2 text-xs text-neutral-400 flex flex-wrap justify-between gap-1">
+                          <span className="whitespace-nowrap">Exp: {i.experience_years} yrs</span>
+                          <span className="truncate max-w-[120px]" title={i.languages}>Lang: {i.languages}</span>
                         </div>
-                        <div className="pt-2 text-[10px] text-neutral-500 flex justify-between">
-                          <span>Specialization: {i.specialization}</span>
-                          <span className="bg-emerald-500/10 text-emerald-450 px-2 py-0.5 rounded uppercase font-bold">Enabled</span>
+                        <div className="pt-2 text-[10px] text-neutral-500 flex flex-wrap justify-between gap-1">
+                          <span className="truncate max-w-[150px]" title={i.specialization}>Spec: {i.specialization}</span>
+                          <span className="bg-emerald-500/10 text-emerald-450 px-2 py-0.5 rounded uppercase font-bold flex-shrink-0">Enabled</span>
                         </div>
                       </div>
                       
@@ -1010,30 +1011,34 @@ export const AdminDashboard: React.FC = () => {
                   <div className="overflow-x-auto text-xs">
                     <table className="w-full text-left divide-y divide-neutral-800">
                       <thead>
-                        <tr className="text-neutral-450 font-bold uppercase tracking-wider text-[10px]">
-                          <th className="pb-3 pl-3">Course Name</th>
-                          <th className="pb-3">Day / Time Slot</th>
-                          <th className="pb-3">Class Level / batch</th>
-                          <th className="pb-3">Instructor</th>
-                          <th className="pb-3">Classroom / Capacity</th>
+                        <tr className="text-neutral-450 font-bold uppercase tracking-wider text-[10px] whitespace-nowrap">
+                          <th className="pb-3 pl-3">Course</th>
+                          <th className="pb-3">Day / Time</th>
+                          <th className="pb-3">Level / Batch</th>
+                          <th className="pb-3">Coach</th>
+                          <th className="pb-3">Room / Seats</th>
                           <th className="pb-3 pr-3 text-right">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-neutral-800/60">
                         {schedules.map((s) => (
                           <tr key={s.id} className="hover:bg-white/5 transition-colors">
-                            <td className="py-3.5 pl-3 font-bold text-white text-sm">{s.course_name}</td>
-                            <td className="py-3.5 text-neutral-300">
-                              {s.day} <br />
-                              <span className="text-xs text-neutral-450">{s.start_time} - {s.end_time}</span>
+                            <td className="py-3.5 pl-3 font-bold text-white text-sm min-w-[120px]">
+                              <span className="block truncate max-w-[160px]">{s.course_name}</span>
                             </td>
-                            <td className="py-3.5 text-neutral-355">
+                            <td className="py-3.5 text-neutral-300 min-w-[100px] whitespace-nowrap">
+                              {s.day} <br />
+                              <span className="text-xs text-neutral-450">{s.start_time} – {s.end_time}</span>
+                            </td>
+                            <td className="py-3.5 text-neutral-355 whitespace-nowrap">
                               {s.batch} <br />
                               <span className="text-xs text-neutral-500">{s.level}</span>
                             </td>
-                            <td className="py-3.5 text-neutral-300 font-medium">{s.instructor}</td>
-                            <td className="py-3.5 text-neutral-450">
-                              {s.room} • {s.available_seats} Capacity
+                            <td className="py-3.5 text-neutral-300 font-medium min-w-[100px]">
+                              <span className="block truncate max-w-[120px]">{s.instructor}</span>
+                            </td>
+                            <td className="py-3.5 text-neutral-450 whitespace-nowrap">
+                              {s.room} • {s.available_seats} seats
                             </td>
                             <td className="py-3.5 pr-3 text-right space-x-1.5">
                               <button 

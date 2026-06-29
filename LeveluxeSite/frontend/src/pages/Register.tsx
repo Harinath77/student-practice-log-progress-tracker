@@ -45,7 +45,13 @@ export const Register: React.FC = () => {
         state: { message: 'Your account has been created successfully! You can now log in.' }
       });
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Registration failed. Email might already be taken.');
+      if (err.response) {
+        setError(err.response.data?.detail || 'Registration failed. Email might already be taken.');
+      } else if (err.request) {
+        setError('Cannot connect to the server. Please ensure the backend is running and reachable.');
+      } else {
+        setError(err.message || 'An unexpected error occurred.');
+      }
     } finally {
       setIsLoading(false);
     }

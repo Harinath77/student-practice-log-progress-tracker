@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Outlet, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import Layout from './components/Layout/Layout';
 import Home from './pages/Home';
@@ -35,8 +35,9 @@ function App() {
     <AuthProvider>
       <Router>
         <ScrollToTop />
-        <Layout>
-          <Routes>
+        <Routes>
+          {/* ── Routes that use the public Layout (Navbar + Footer) ── */}
+          <Route element={<Layout><Outlet /></Layout>}>
             {/* Guest Auth routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -44,7 +45,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
 
-            {/* Protected routes (requires login) */}
+            {/* Protected student routes */}
             <Route element={<AuthGuard />}>
               <Route path="/" element={<Home />} />
               <Route path="/courses" element={<Courses />} />
@@ -57,12 +58,6 @@ function App() {
               <Route path="/profile" element={<Profile />} />
             </Route>
 
-            {/* Protected Admin Workspace routes */}
-            <Route element={<AdminGuard />}>
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            </Route>
-
             {/* Fallback route */}
             <Route path="*" element={
               <div className="py-24 text-center bg-neutral-950 text-white min-h-[60vh] flex flex-col justify-center items-center space-y-4">
@@ -73,8 +68,22 @@ function App() {
                 </Link>
               </div>
             } />
-          </Routes>
-        </Layout>
+          </Route>
+
+          {/* ── Admin routes — NO public Layout wrapper ── */}
+          <Route element={<AdminGuard />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/courses" element={<AdminDashboard />} />
+            <Route path="/admin/instructors" element={<AdminDashboard />} />
+            <Route path="/admin/users" element={<AdminDashboard />} />
+            <Route path="/admin/enrollments" element={<AdminDashboard />} />
+            <Route path="/admin/schedule" element={<AdminDashboard />} />
+            <Route path="/admin/settings" element={<AdminDashboard />} />
+            <Route path="/admin/audit-logs" element={<AdminDashboard />} />
+            <Route path="/admin/*" element={<AdminDashboard />} />
+          </Route>
+        </Routes>
       </Router>
     </AuthProvider>
   );

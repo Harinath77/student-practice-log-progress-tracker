@@ -1,7 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 from app.config import settings
 from app.routers import health, courses, instructors, schedule, enrollments, auth, admin
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Run startup tasks: create DB tables and seed default admin."""
+    try:
+        from init_db import init_db
+        init_db()
+    except Exception as e:
+        print(f"[Startup] DB initialization warning: {e}")
+    yield  # Server runs here
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -14,7 +25,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
